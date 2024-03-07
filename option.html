@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上下布局及左右布局背景色示例</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #d8d8d8;
+        }
+
+        .upper-section {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            height: 90px;
+        }
+
+        .lower-section {
+            display: flex;
+            padding: 20px;
+            height: 75vh;
+        }
+
+        .left-column {
+            background-color: #f0f0f0;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .right-column {
+            background-color: #f7fff6;
+            flex: 1;
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 40%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .radio-group {
+            margin-bottom: 10px;
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        #d1 {
+            overflow-y: auto;
+            width: 100%;
+            height: 50vh;
+            margin: 10px auto;
+            padding: 5px;
+        }
+
+        #d1 span {
+            display: inline-block;
+            width: 110px;
+            margin: 10px 0px 10px 40px;
+            text-align: left;
+        }
+
+        .flat-button {
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .flat-button:hover {
+            background-color: #555;
+        }
+
+        .flat-button:active {
+            background-color: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="upper-section">
+        <h1>小墨鱼-加减乘除题目生成器</h1>
+    </div>
+
+    <div class="lower-section">
+        <div class="left-column">
+            <h2>参数设置区域</h2>
+            <form onsubmit="return false">
+                <div class="radio-group options">
+                    <label>
+                        <input type="radio" id="add" name="options" value="add" checked> 加
+                    </label>
+                    <label>
+                        <input type="radio" id="sub" name="options" value="sub"> 减
+                    </label>
+                    <label>
+                        <input type="radio" id="mul" name="options" value="mul"> 乘
+                    </label>
+                    <label>
+                        <input type="radio" id="divide" name="options" value="divide"> 除
+                    </label>
+                </div>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="r1" name="needAns" value="1" checked> 需要答案
+                    </label>
+                    <label>
+                        <input type="radio" id="r2" name="needAns" value="0"> 不需要答案
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="name">第一个数:</label>
+                    <input id="n1" type="text" />
+                    <span>- </span>
+                    <input id="n2" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="name">第二个数:</label>
+                    <input id="n3" type="text" />
+                    <span>- </span>
+                    <input id="n4" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="num">题目数（默认200题）:</label>
+                    <input type="text" id="num" name="num">
+                </div>
+                <div class="form-group">
+                    <label for="cell">列数（默认4列）:</label>
+                    <input type="text" id="cell" name="cell">
+                </div>
+                <button type="submit" id="tbtn" class="flat-button" onclick="randomCal()">随机生成</button>
+            </form>
+        </div>
+        <div class="right-column">
+            <h2>结果区域</h2>
+            <button id="tbtn1" style="margin-left: 20px;" class="flat-button" onclick="down()">下载题目</button>
+            <button id="tbtn2" style="margin-left: 15px;" class="flat-button" onclick="downAns()">下载答案</button>
+            <div id="d1"></div>
+        </div>
+    </div>
+
+</body>
+
+<script type="application/javascript">
+    var ansCsv = ''
+    var subjectCsv = ''
+    function randomCal() {
+        // 初始化
+        ansCsv = ''
+        subjectCsv = ''
+        document.getElementById("d1").innerHTML = ''
+        var subjectList = []
+        var ansList = []
+        var docHtmlList = []
+        // 读取入参
+        var radios = document.querySelectorAll('.options input[type="radio"]');
+        var option;
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                option = radios[i].value
+                break
+            }
+        }
+        console.log(option)
+        var num = document.getElementById("num").value
+        var cell = document.getElementById("cell").value
+        var n1 = document.getElementById("n1").value
+        var n2 = document.getElementById("n2").value
+        var n3 = document.getElementById("n3").value
+        var n4 = document.getElementById("n4").value
+        var radio = document.getElementById("r1").checked
+        num = num == undefined || num == 0 || num == null ? 200 : num
+        cell = cell == undefined || cell == 0 || cell == null ? 4 : num
+        n1 = n1 == undefined || n1 == 0 || n1 == null ? 11 : n1
+        n2 = n2 == undefined || n2 == 0 || n2 == null ? 20 : n2
+        n3 = n3 == undefined || n3 == 0 || n3 == null ? 1 : n3
+        n4 = n4 == undefined || n4 == 0 || n4 == null ? 20 : n4
+        if (num > 500) {
+            alert("一次最多500题")
+            return
+        }
+        // 生成数据
+        for (var i = 0; ; i++) {
+            var v1 = getRandomInt(n1, n2)
+            var v2 = getRandomInt(n3, n4)
+            var condition
+            var op = '+'
+            var exp
+            switch (option) {
+                case 'add':
+                    condition = true
+                    op = '+'
+                    exp = (radio ? (v1 + v2) : '')
+                    break;
+                case 'sub':
+                    condition = v2 > (v1 - 10) && v1 > v2
+                    op = '-'
+                    exp = (radio ? (v1 - v2) : '')
+                    break;
+                case 'mul':
+                    condition = v2 > (v1 - 10) && v1 > v2
+                    op = 'x'
+                    exp = (radio ? (v1 * v2) : '')
+                    break;
+                case 'divide':
+                    condition = v1 > v2
+                    op = '÷'
+
+                    exp = (radio ? Math.floor(v1 / v2) + (v1 % v2 == 0 ? '' : '...' + (v1 % v2)) : '')
+                    break;
+                default:
+                    condition = true
+                    op = '+'
+                    exp = (radio ? (v1 + v2) : '')
+            }
+            if (condition) {
+                var htmlSubject = "<span>" + v1 + op + v2 + " = " + exp + "</span>"
+                var subject = v1 + op + v2 + " = "
+                var ans = v1 + op + v2 + " = " + (radio ? (v1 - v2) : '')
+                docHtmlList.push(htmlSubject)
+                subjectList.push(subject)
+                ansList.push(ans)
+            }
+            if (docHtmlList.length >= num || i >= 1000000) {
+                break
+            }
+        }
+        for (var i = 0; i < docHtmlList.length; i++) {
+            if ((i + 1) % cell == 0) {
+                docHtmlList[i] += '<br>'
+                subjectCsv += (subjectList[i] + ',\n')
+                ansCsv += (ansList[i] + ',\n')
+            } else {
+                subjectCsv += (subjectList[i] + ',')
+                ansCsv += (ansList[i] + ',')
+            }
+            document.getElementById("d1").innerHTML += docHtmlList[i]
+        }
+
+    }
+
+    /*
+     * 生成范围随机数
+     */
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /*
+    * 下载题目
+    */
+    function down() {
+        const blob = new Blob([subjectCsv], { type: "text/csv;charset=utf-8" });
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = "题目.csv";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
+    /*
+    * 下载答案
+    */
+    function downAns() {
+        const blob = new Blob([ansCsv], { type: "text/csv;charset=utf-8" });
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = "题目带答案.csv";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+</script>
+
+</html>
